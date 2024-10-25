@@ -1,3 +1,6 @@
+// Initial minimum for Madness dice
+let minimumMadness = 0;
+
 document.getElementById("rollButton").addEventListener("click", rollDice);
 document.getElementById("breakdownButton").addEventListener("click", applyBreakdown);
 document.getElementById("madnessDice").addEventListener("input", validateDiceInput);
@@ -36,11 +39,18 @@ function applyBreakdown() {
         willpowerInput.value = willpowerCount;
     }
 
-    // Increase Madness by at least 1, but not above the maximum of 6
+    // Increase the minimum Madness value by 1, up to a max of 6
+    if (minimumMadness < 6) {
+        minimumMadness++;
+    }
+
+    // Adjust Madness input if it's below the new minimum or above the maximum of 6
     let madnessCount = parseInt(madnessInput.value);
-    if (madnessCount < 6) {
-        madnessCount++;
+    if (madnessCount < minimumMadness) {
+        madnessCount = minimumMadness;
         madnessInput.value = madnessCount;
+    } else if (madnessCount > 6) {
+        madnessInput.value = 6;
     }
 }
 
@@ -69,9 +79,19 @@ function validateDiceInput(event) {
     const input = event.target;
     const max = input.id === "madnessDice" ? 6 : 7;
 
-    if (input.value > max) {
-        input.value = max;
-    } else if (input.value < 0) {
-        input.value = 0;
+    if (input.id === "madnessDice") {
+        // Ensure Madness dice is within minimum and maximum bounds
+        if (input.value > max) {
+            input.value = max;
+        } else if (input.value < minimumMadness) {
+            input.value = minimumMadness;
+        }
+    } else {
+        // Ensure Exhaustion dice does not exceed its maximum
+        if (input.value > max) {
+            input.value = max;
+        } else if (input.value < 0) {
+            input.value = 0;
+        }
     }
 }
